@@ -14,7 +14,9 @@ Automated checks are made whenever the dedicated server saves. It allows for use
 input except during the restart phase. It was written with the assumption that the server was
 set up following the guide at https://pzwiki.net/wiki/Dedicated_server, but should be easily
 adaptable to different configurations. This is my first foray into expect scripting, so there
-was quite a bit of trial and error, but it works great. Hope you find it useful! After matching
-up the prompt strings to your server, drop it into pzuser's home directory and run
+was quite a bit of trial and error, but it works great. Hope you find it useful!
+
+After matching up the prompt strings to your server using your preferred text editor,
+drop it into pzuser's home directory and run:
 
 expect /home/pzuser/PZmodupdater.exp
