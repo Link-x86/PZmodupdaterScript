@@ -1,5 +1,5 @@
 # PZmodupdaterScript
-A simple Expect script to automate dedicated Project Zomboid server mods
+A simple Expect script to automate dedicated Project Zomboid server mods. 
 After fighting with getting my dedicated server updated automatically while running as a service,
 I worked up an Expect script to take care of it for me. This allows the server to run as intended,
 performs clean shutdowns and restarts, and avoids having to set up a systemd service that's kinda
