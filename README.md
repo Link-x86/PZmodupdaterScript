@@ -17,6 +17,6 @@ adaptable to different configurations. This is my first foray into expect script
 was quite a bit of trial and error, but it works great. Hope you find it useful!
 
 After matching up the prompt strings to your server using your preferred text editor,
-drop it into pzuser's home directory and run:
+drop it into the pzserver directory and run:
 
-expect /home/pzuser/PZmodupdater.txt
+expect /opt/pzserver/PZmodupdater.exp
