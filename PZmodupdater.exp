@@ -1,0 +1,76 @@
+#!/usr.bin.expect -f
+#
+#This expect script was written by Dale Hudson on May 20, 2024, to automate Project Zomboid dedicated server mod updates.
+#This is my first time using expect, so there was a ton of trial and error to make this work. If you found it helpful
+#please consider making a donation, BTC address: bc1q4vq58vuyuvp8kchvclunj2epwkz5aqmvmfsw2t
+#
+#Expect and autoexpect were both written by Don Libes, NIST.
+#
+#Prior to running this you must install expect. sudo apt install expect will get it done on Ubuntu. This is to be run
+#under the same user account you use to run the server regularly. This will be pzuser if you followed the guide on the
+#pz wiki. Starting this script is similar to starting the server normally. Assuming you are logged in as pzuser and
+#have placed this script in the /opt/pzserver directory, it can be called by running "expect /opt/pzserver/PZmodupdater.txt"
+# 
+#Enable conservative input, this may not actually be needed. This bit of code was pulled from the autoexpect script I
+#generated as a starting point.
+
+set force_conservative 1 ;#set to 1 to force conservative mode even if
+			 ;#script wasn't run conservatively originally
+if {$force_conservative} {
+	set send_slow {1 .1}
+	proc send {ignore arg} {
+		sleep .1
+		exp_send -s -- $arg
+	}
+}
+#
+#Set server warning messages here.
+#
+set MSG1 "servermsg \"Mod updates detected. Server will restart in 5 minutes to apply updates.\""
+set MSG2 "servermsg \"Server will restart in 60 seconds. Hope you're somewhere safe!\""
+set MSG3 "servermsg \"Server is shutting down. Updates should complete shortly.\""
+#
+#Disable timeout, spawn shell, and set read buffer. I set the read buffer low to hopefully reduce overhead.
+#
+set timeout -1
+spawn $env(SHELL)
+match_max 200
+#
+#Script begins here. Starting with expect_background is required to allow user interaction with the terminal.
+#Format the expect string as "*[username]@[hostname]*". Expect will look for this string when the shell starts, wait 10 seconds
+#and launch the server. Match the send string to your server start script.
+#  
+expect_background "*pzuser@pzserve:*" {
+	sleep 10;send -- "/bin/sh /opt/pzserver/start-server.sh -servername Test\n"
+#
+#Update checks will occur any time the server completes an automated save. This can be set in your [servername].ini file.
+#Expect_background will allow you to pass command as you normally would. Manual saves/quits will also trigger the update check.
+# 
+	expect_background {
+		"Saving finish" {send -- "checkmodsneedupdate\r";exp_continue}
+		"CheckModsNeedUpdate: Mods need update" {
+#
+#Once the Mod update is triggered, user input will not be available. Server warnings  will be sent 5 minutes, 1 minute,
+#and as the restart initiates. There is a 15 second delay between the final message and the quit command.
+#
+		send -- "$MSG1\r"
+		expect "Message sent." {sleep 240;send -- "$MSG2\r"}
+		expect "Message sent." {sleep 60;send -- "$MSG3\r"}
+		expect "Message sent." {sleep 15;send -- "quit\r"}
+#
+#Once the server shut down triggers, Expect will wait for the shell prompt to appear, wait 10 seconds, then start the server.
+#User input will be accepted again after this command is sent.
+#
+		expect "*pzuser@pzserve:*" {sleep 10;send -- "/bin/sh /opt/pzserver/start-server.sh -servername Test\r"}
+		};exp_continue
+	}
+}
+#
+#The interact command here allows for user terminal input while the server is running. Typing ~x will allow for clean
+#exiting of the script after a manual quit is issued. Do NOT enter this while the server is running as it will kill the shell in
+#which the server was running. Alternatively you can enter exit at the shell prompt. Doing so will trigger an error as it kills the
+#shell the script was using. I just wanted a cleaner alternative.
+#  
+interact {
+~x {return}
+-o eof}
