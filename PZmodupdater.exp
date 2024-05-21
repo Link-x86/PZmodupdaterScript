@@ -9,7 +9,7 @@
 #Prior to running this you must install expect. sudo apt install expect will get it done on Ubuntu. This is to be run
 #under the same user account you use to run the server regularly. This will be pzuser if you followed the guide on the
 #pz wiki. Starting this script is similar to starting the server normally. Assuming you are logged in as pzuser and
-#have placed this script in the /opt/pzserver directory, it can be called by running "expect /opt/pzserver/PZmodupdater.txt"
+#have placed this script in the /opt/pzserver directory, it can be called by running "expect /opt/pzserver/PZmodupdater.exp"
 # 
 #Enable conservative input, this may not actually be needed. This bit of code was pulled from the autoexpect script I
 #generated as a starting point.
